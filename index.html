@@ -1,1 +1,948 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payo App</title>
+  <!-- بارگذاری React, ReactDOM و HTM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
 
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --card-bg: #161920;
+      --text: #ffffff;
+      --muted: #8f97a8;
+      --primary: #2f6bff;
+      --border: rgba(255, 255, 255, 0.08);
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      direction: rtl;
+      padding-bottom: 70px;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    button, input, select {
+      font-family: inherit;
+    }
+    
+    /* Layout & Utilities */
+    .page {
+      padding: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .row.between {
+      justify-content: space-between;
+    }
+    .grid12 {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .s12 { grid-column: span 12; }
+    .s8 { grid-column: span 8; }
+    .s4 { grid-column: span 4; }
+
+    @media (max-width: 768px) {
+      .s8, .s4 {
+        grid-column: span 12;
+      }
+    }
+    
+    /* Navigation & Topbar */
+    .topbar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-in {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navlinks {
+      display: flex;
+      gap: 16px;
+    }
+    .navlinks a {
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .navlinks a.on {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .bottomnav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+    }
+    .bottomnav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .bottomnav a.on {
+      color: var(--primary);
+    }
+    
+    /* Buttons & Controls */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-quiet { background: transparent; color: var(--muted); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-ghost { background: rgba(255, 255, 255, 0.05); color: #fff; }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 6px 10px; font-size: 13px; }
+    
+    .fab {
+      position: fixed;
+      bottom: 70px;
+      left: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(47, 107, 255, 0.4);
+      z-index: 90;
+    }
+    
+    .seg {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+    }
+    .seg button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .seg button.on {
+      background: var(--card-bg);
+      color: #fff;
+    }
+    
+    /* Forms & Inputs */
+    .input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      outline: none;
+    }
+    .amount-in {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 16px;
+    }
+    .amount-in input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 24px;
+      text-align: left;
+      width: 100%;
+    }
+    
+    /* Modals & Helpers */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+    .muted { color: var(--muted); }
+    .xs { font-size: 12px; }
+    .sm { font-size: 14px; }
+    .num {
+      font-feature-settings: "tnum";
+      direction: ltr;
+      display: inline-block;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 6px;
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+    }
+    .pill.on {
+      border-color: var(--primary);
+      background: rgba(47, 107, 255, 0.1);
+    }
+    .toasts {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+    }
+    .toast {
+      background: #1f2430;
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const html = htm.bind(React.createElement);
+    const { useState, useEffect, useMemo, createContext, useContext } = React;
+
+    /* =============================== HELPERS & CONSTANTS =============================== */
+    const fa = (n) => String(n ?? '').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+    const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+    const toman = (n) => fa(Number(n || 0).toLocaleString('fa-IR')) + ' تومان';
+    const iso = (d) => new Date(d).toISOString().split('T')[0];
+    const today0 = () => new Date().setHours(0, 0, 0, 0);
+    const fullDate = (d) => new Date(d).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const Log = { error: console.error, info: console.log };
+
+    const CATEGORY_COLOR = {
+      'خوراکی': '#ff5252',
+      'حمل‌ونقل': '#ffb142',
+      'مسکن': '#706fd3',
+      'سرگرمی': '#34ace0',
+      'قبوض': '#ff793f',
+      'حقوق': '#33d9b2',
+      'پاداش': '#2ed573',
+      'سایر': '#84817a'
+    };
+    const EXPENSE_CATEGORIES = ['خوراکی', 'حمل‌ونقل', 'مسکن', 'سرگرمی', 'قبوض', 'سایر'];
+    const INCOME_CATEGORIES = ['حقوق', 'پاداش', 'سایر'];
+    const RANGES = [
+      { id: '7d', label: '۷ روز' },
+      { id: '30d', label: '۳۰ روز' },
+      { id: '90d', label: '۳ ماه' }
+    ];
+
+    /* =============================== HOOKS & STORE =============================== */
+    const Store = createContext({});
+    const useStore = () => useContext(Store);
+
+    function useRoute() {
+      const [loc, setLoc] = useState(window.location.hash || '#/');
+      useEffect(() => {
+        const h = () => setLoc(window.location.hash || '#/');
+        window.addEventListener('hashchange', h);
+        return () => window.removeEventListener('hashchange', h);
+      }, []);
+      const [path, qStr] = loc.replace(/^#/, '').split('?');
+      return { path: path || '/', query: new URLSearchParams(qStr || '') };
+    }
+
+    function useDebounced(val, ms) {
+      const [v, setV] = useState(val);
+      useEffect(() => {
+        const t = setTimeout(() => setV(val), ms);
+        return () => clearTimeout(t);
+      }, [val, ms]);
+      return v;
+    }
+
+    function useApi(fn, deps = []) {
+      const [state, setState] = useState({ status: 'loading', data: null, error: null });
+      const load = async () => {
+        setState({ status: 'loading', data: null, error: null });
+        try {
+          const res = await fn();
+          setState({ status: 'success', data: res, error: null });
+        } catch (err) {
+          setState({ status: 'error', data: null, error: err });
+        }
+      };
+      useEffect(() => { load(); }, deps);
+      return { ...state, reload: load };
+    }
+
+    const go = (url) => { window.location.hash = '#' + url; };
+
+    /* =============================== MOCK API =============================== */
+    const mockTxs = [
+      { id: '1', name: 'خرید سوپرمارکت', amount: 450000, type: 'expense', category: 'خوراکی', date: iso(new Date()), status: 'done', source: 'web' },
+      { id: '2', name: 'واریز حقوق', amount: 18500000, type: 'income', category: 'حقوق', date: iso(new Date(Date.now() - 86400000)), status: 'done', source: 'telegram' },
+      { id: '3', name: 'اسنپ', amount: 85000, type: 'expense', category: 'حمل‌ونقل', date: iso(new Date(Date.now() - 172800000)), status: 'done', source: 'telegram' }
+    ];
+
+    const api = {
+      dashboard: {
+        summary: async () => ({
+          income: 18500000,
+          prevIncome: 16000000,
+          expenses: 5350000,
+          prevExpenses: 6200000,
+          savings: 13150000
+        }),
+        recent: async () => ({ items: mockTxs }),
+        topCategories: async () => ([
+          { category: 'خوراکی', share: 45, amount: 2400000 },
+          { category: 'مسکن', share: 30, amount: 1600000 },
+          { category: 'حمل‌ونقل', share: 25, amount: 1350000 }
+        ]),
+        insights: async () => ([
+          { id: '1', text: 'هزینه‌های این ماه شما ۱۰٪ نسبت به ماه قبل کاهش یافته است.' }
+        ])
+      },
+      transactions: {
+        list: async (q) => {
+          let res = [...mockTxs];
+          if (q.type) res = res.filter(t => t.type === q.type);
+          if (q.category) res = res.filter(t => t.category === q.category);
+          if (q.q) res = res.filter(t => t.name.includes(q.q));
+          return { items: res };
+        },
+        create: async (tx) => {
+          mockTxs.unshift({ ...tx, id: String(Date.now()), status: 'done', source: 'web' });
+        },
+        remove: async (id) => {
+          const idx = mockTxs.findIndex(t => t.id === id);
+          if (idx !== -1) mockTxs.splice(idx, 1);
+        }
+      },
+      analytics: {
+        series: async () => ([
+          { date: '1', income: 0, expense: 450000 },
+          { date: '2', income: 18500000, expense: 85000 }
+        ]),
+        categories: async () => ([
+          { category: 'خوراکی', share: 45, amount: 2400000 },
+          { category: 'مسکن', share: 30, amount: 1600000 }
+        ]),
+        insights: async () => ([
+          { id: '1', text: 'بیشترین سهم هزینه مربوط به دسته‌بندی خوراکی است.' }
+        ])
+      }
+    };
+
+    /* =============================== UI COMPONENTS =============================== */
+    const Logo = () => html`
+      <div style=${{ fontSize: 20, fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style=${{ width: 12, height: 12, background: 'var(--primary)', borderRadius: '50%' }}></span>
+        PAYO
+      </div>
+    `;
+
+    const Icon = ({ n, s = 20 }) => {
+      const icons = {
+        plus: '＋', back: '←', up: '↑', down: '↓', search: '🔍', trend: '📈',
+        trash: '🗑', x: '✕', check: '✓', home: '🏠', list: '📋', chart: '📊'
+      };
+      return html`<span style=${{ fontSize: s, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>${icons[n] || '•'}</span>`;
+    };
+
+    const Sk = ({ h = 20 }) => html`<div style=${{ height: h, background: 'rgba(255,255,255,0.05)', borderRadius: 8, animation: 'pulse 1.5s infinite' }}></div>`;
+    const RowsSkeleton = ({ n = 3 }) => html`<div className="stack" style=${{ gap: 8 }}>${Array(n).fill(0).map((_, i) => html`<${Sk} key=${i} h=${40} />`)}</div>`;
+
+    const StatCard = ({ title, value, note, meter, hatch }) => html`
+      <div className="card">
+        <div className="muted sm">${title}</div>
+        <div className="num" style=${{ fontSize: 22, fontWeight: 700, margin: '8px 0' }}>${toman(value)}</div>
+        <div className="xs muted">${note}</div>
+        ${meter !== undefined && html`
+          <div style=${{ height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2, marginTop: 10, overflow: 'hidden' }}>
+            <div style=${{ width: meter + '%', height: '100%', background: hatch ? 'var(--danger)' : 'var(--primary)' }}></div>
+          </div>
+        `}
+      </div>
+    `;
+
+    const TxRow = ({ t, onClick }) => html`
+      <div className="row between" onClick=${onClick} style=${{ padding: '10px 0', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}>
+        <div className="row">
+          <div style=${{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <${Icon} n=${t.type === 'income' ? 'up' : 'down'} s=${16} />
+          </div>
+          <div>
+            <div className="sm" style=${{ fontWeight: 500 }}>${t.name}</div>
+            <div className="xs muted">${t.category} • ${fullDate(t.date)}</div>
+          </div>
+        </div>
+        <div className="num sm" style=${{ fontWeight: 600, color: t.type === 'income' ? 'var(--success)' : '#fff' }}>
+          ${t.type === 'income' ? '+' : '−'}${fa(t.amount)}
+        </div>
+      </div>
+    `;
+
+    const StackBar = ({ items }) => html`
+      <div style=${{ height: 10, display: 'flex', borderRadius: 5, overflow: 'hidden', gap: 2 }}>
+        ${items.map(i => html`<div key=${i.category} style=${{ width: i.share + '%', background: CATEGORY_COLOR[i.category] }}></div>`)}
+      </div>
+    `;
+
+    const BarChart = () => html`
+      <div style=${{ height: 200, display: 'flex', alignItems: 'flex-end', gap: 12, padding: '20px 0' }}>
+        <div style=${{ flex: 1, height: '60%', background: 'var(--primary)', borderRadius: 4 }}></div>
+        <div style=${{ flex: 1, height: '40%', background: '#ff5252', borderRadius: 4 }}></div>
+        <div style=${{ flex: 1, height: '80%', background: 'var(--primary)', borderRadius: 4 }}></div>
+      </div>
+    `;
+
+    const Select = ({ value, onChange, options }) => html`
+      <select className="input" value=${value} onChange=${e => onChange(e.target.value)} style=${{ width: 'auto' }}>
+        ${options.map((o, i) => o.header 
+          ? html`<optgroup key=${i} label=${o.header}></optgroup>`
+          : html`<option key=${o.value || i} value=${o.value}>${o.label}</option>`)}
+      </select>
+    `;
+
+    const Modal = ({ title, onClose, children }) => html`
+      <div className="modal-overlay" onClick=${onClose}>
+        <div className="modal-content" onClick=${e => e.stopPropagation()}>
+          <div className="row between" style=${{ marginBottom: 16 }}>
+            <h3 style=${{ fontSize: 16, fontWeight: 600 }}>${title}</h3>
+            <button className="btn btn-quiet btn-sm" onClick=${onClose}><${Icon} n="x" /></button>
+          </div>
+          ${children()}
+        </div>
+      </div>
+    `;
+
+    const ErrorState = ({ title, text, onRetry }) => html`
+      <div style=${{ textAlign: 'center', padding: 20 }}>
+        <div style=${{ color: 'var(--danger)', marginBottom: 8 }}>${title}</div>
+        <p className="xs muted">${text}</p>
+        ${onRetry && html`<button className="btn btn-ghost btn-sm" onClick=${onRetry} style=${{ marginTop: 12 }}>تلاش مجدد</button>`}
+      </div>
+    `;
+
+    const EmptyState = ({ title, text, cta, onCta }) => html`
+      <div style=${{ textAlign: 'center', padding: 30 }}>
+        <p className="sm" style=${{ fontWeight: 600 }}>${title}</p>
+        <p className="xs muted" style=${{ margin: '6px 0 14px' }}>${text}</p>
+        ${cta && html`<button className="btn btn-primary btn-sm" onClick=${onCta}>${cta}</button>`}
+      </div>
+    `;
+
+    /* =============================== DASHBOARD PAGE =============================== */
+    function Dashboard() {
+      const { version, openAdd, openTx } = useStore();
+      const summary = useApi(() => api.dashboard.summary(), [version]);
+      const rec = useApi(() => api.dashboard.recent(), [version]);
+      const topCat = useApi(() => api.dashboard.topCategories(), [version]);
+      const ins = useApi(() => api.dashboard.insights(), [version]);
+
+      const s = summary.data || { income: 0, prevIncome: 0, expenses: 0, prevExpenses: 0, savings: 0 };
+      const rate = s.income ? Math.round((s.savings / s.income) * 100) : 0;
+      const pctText = (cur, prev, incLabel = 'افزایش', decLabel = 'کاهش') => {
+        if (!prev) return '—';
+        const diff = Math.round(((cur - prev) / prev) * 100);
+        return diff >= 0 ? `${fa(diff)}٪ ${incLabel} نسبت به ماه قبل` : `${fa(Math.abs(diff))}٪ ${decLabel} نسبت به ماه قبل`;
+      };
+
+      const top = topCat.data || [];
+
+      return html`
+        <div className="page">
+          <div className="grid12">
+            <div className="s12 row between" style=${{ marginBottom: 8 }}>
+              <div>
+                <h1 style=${{ fontSize: 20, fontWeight: 700 }}>خلاصه وضعیت مالی</h1>
+                <p className="xs muted">نگاه کلی به عملکرد این ماه</p>
+              </div>
+              <div className="row">
+                <button className="btn btn-ghost btn-sm" onClick=${() => openAdd('income')}><${Icon} n="plus" s=${14} />درآمد</button>
+                <button className="btn btn-primary btn-sm" onClick=${() => openAdd('expense')}><${Icon} n="plus" s=${14} />هزینه</button>
+              </div>
+            </div>
+            <div className="s12 grid12">
+              <div className="s4"><${StatCard} title="درآمد این ماه" value=${s.income} note=${pctText(s.income, s.prevIncome)} meter=${Math.min(100, Math.round((s.income / (s.prevIncome || s.income || 1)) * 50))} /></div>
+              <div className="s4"><${StatCard} title="هزینه‌ی این ماه" value=${s.expenses} note=${pctText(s.expenses, s.prevExpenses, 'بیشتر', 'کمتر')} meter=${s.income ? Math.min(100, Math.round((s.expenses / s.income) * 100)) : 50} hatch=${true} /></div>
+              <div className="s4"><${StatCard} title="پس‌انداز این ماه" value=${s.savings} note=${rate >= 0 ? `${fa(rate)}٪ نرخ پس‌انداز` : 'کسری بودجه'} meter=${Math.max(0, Math.min(100, rate))} /></div>
+            </div>
+            <div className="card s8">
+              <div className="row between" style=${{ marginBottom: 12 }}>
+                <span className="card-title">تراکنش‌های اخیر</span>
+                <button className="btn btn-quiet btn-sm" onClick=${() => go('/transactions')}>همه<${Icon} n="back" s=${14} /></button>
+              </div>
+              ${rec.status === 'loading'
+                ? html`<${RowsSkeleton} n=${5} />`
+                : rec.data.items.length === 0
+                ? html`<p className="muted xs" style=${{ padding: '20px 0', textAlign: 'center' }}>تراکنشی ثبت نشده است.</p>`
+                : rec.data.items.map((t) => html`<${TxRow} key=${t.id} t=${t} onClick=${() => openTx(t)} />`)}
+            </div>
+            <div className="card s4">
+              <div className="card-title" style=${{ marginBottom: 14 }}>تحلیل و پیشنهادها</div>
+              ${(ins.data || []).length === 0
+                ? html`<p className="muted xs">هنوز داده کافی برای تحلیل وجود ندارد.</p>`
+                : ins.data.map((item) => html`<div key=${item.id} className="row xs muted" style=${{ gap: 8, marginTop: 8 }}><${Icon} n="trend" /><div>${item.text}</div></div>`)}
+            </div>
+            <div className="card s12">
+              <div className="row between" style=${{ marginBottom: 14 }}>
+                <span className="card-title">سهم هزینه‌های این ماه</span>
+                <button className="btn btn-quiet btn-sm" onClick=${() => go('/analytics')}>نمودار کامل<${Icon} n="back" s=${14} /></button>
+              </div>
+              ${top.length > 0 ? html`<${StackBar} items=${top} />` : null}
+              <div style=${{ marginTop: 14 }}>
+                ${top.length === 0
+                  ? html`<p className="muted xs">هزینه‌ای ثبت نشده است.</p>`
+                  : top.map((c) => html`
+                    <div key=${c.category} className="row between sm" style=${{ padding: '6px 0', cursor: 'pointer' }} onClick=${() => go('/analytics?cat=' + encodeURIComponent(c.category))}>
+                      <span style=${{ fontWeight: 500 }}>${c.category}</span>
+                      <span className="num muted">${fa(c.share)}٪</span>
+                    </div>
+                  `)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =============================== TRANSACTIONS PAGE =============================== */
+    function TransactionsPage() {
+      const { version, openAdd, openTx } = useStore();
+      const [search, setSearch] = useState('');
+      const [cat, setCat] = useState('');
+      const [type, setType] = useState('');
+      const qDebounced = useDebounced(search, 250);
+
+      const query = useMemo(() => ({ q: qDebounced, category: cat, type: type, limit: 50 }), [qDebounced, cat, type]);
+      const txs = useApi(() => api.transactions.list(query), [version, JSON.stringify(query)]);
+
+      const catOpts = [
+        { value: '', label: 'همه دسته‌ها' },
+        { header: 'هزینه‌ها' },
+        ...EXPENSE_CATEGORIES.map((c) => ({ value: c, label: c })),
+        { header: 'درآمدها' },
+        ...INCOME_CATEGORIES.map((c) => ({ value: c, label: c })),
+      ];
+
+      const typeOpts = [
+        { value: '', label: 'همه تراکنش‌ها' },
+        { value: 'expense', label: 'فقط هزینه‌ها' },
+        { value: 'income', label: 'فقط درآمدها' },
+      ];
+
+      return html`
+        <div className="page">
+          <div className="page-head">
+            <h1>تراکنش‌ها</h1>
+            <button className="btn btn-primary" onClick=${() => openAdd('expense')}><${Icon} n="plus" s=${18} />تراکنش جدید</button>
+          </div>
+          <div className="card">
+            <div className="row" style=${{ gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+              <div style=${{ flex: 1, minWidth: 180 }}>
+                <input type="text" className="input" placeholder="جستجو در عنوان یا دسته..." value=${search} onInput=${(e) => setSearch(e.target.value)} />
+              </div>
+              <${Select} value=${cat} onChange=${setCat} options=${catOpts} />
+              <${Select} value=${type} onChange=${setType} options=${typeOpts} />
+            </div>
+            <div>
+              ${txs.status === 'loading'
+                ? html`<${RowsSkeleton} n=${8} />`
+                : txs.status === 'error'
+                ? html`<${ErrorState} title="خطا در دریافت لیست" text="امکان بارگذاری تراکنش‌ها وجود ندارد." onRetry=${txs.reload} />`
+                : txs.data.items.length === 0
+                ? html`<${EmptyState} title="تراکنشی پیدا نشد" text="با فیلترهای انتخابی هیچ تراکنشی یافت نشد." cta="ثبت تراکنش" onCta=${() => openAdd('expense')} />`
+                : txs.data.items.map((t) => html`<${TxRow} key=${t.id} t=${t} onClick=${() => openTx(t)} />`)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =============================== ANALYTICS PAGE =============================== */
+    function AnalyticsPage() {
+      const { version, query } = useStore();
+      const [range, setRange] = useState('30d');
+      const [selCat, setSelCat] = useState(query.get('cat') || '');
+
+      useEffect(() => {
+        const c = query.get('cat');
+        if (c) setSelCat(c);
+      }, [query]);
+
+      const series = useApi(() => api.analytics.series(range), [version, range]);
+      const categories = useApi(() => api.analytics.categories(range), [version, range]);
+      const insights = useApi(() => api.analytics.insights(range), [version, range]);
+
+      return html`
+        <div className="page">
+          <div className="page-head">
+            <h1>تحلیل مالی</h1>
+            <div className="seg">
+              ${RANGES.map((r) => html`<button key=${r.id} className=${range === r.id ? 'on' : ''} onClick=${() => setRange(r.id)}>${r.label}</button>`)}
+            </div>
+          </div>
+          <div className="grid12">
+            <div className="card s8">
+              <div className="row between" style=${{ marginBottom: 16 }}>
+                <span className="card-title">روند درآمد و هزینه</span>
+              </div>
+              ${series.status === 'loading' ? html`<${Sk} h=${200} />` : series.status === 'error' ? html`<${ErrorState} title="خطا" text="دریافت نمودار با مشکل مواجه شد." onRetry=${series.reload} />` : html`<${BarChart} />`}
+            </div>
+            <div className="card s4">
+              <span className="card-title">تحلیل و بینش‌ها</span>
+              <div style=${{ marginTop: 12 }}>
+                ${insights.status === 'loading' ? html`<${Sk} h=${120} />` : (insights.data || []).map((item) => html`<div key=${item.id} className="xs muted" style=${{ marginTop: 8 }}>•${item.text}</div>`)}
+              </div>
+            </div>
+            <div className="card s12">
+              <div className="row between" style=${{ marginBottom: 16 }}>
+                <span className="card-title">تفکیک هزینه‌ها به دسته‌بندی</span>
+                ${selCat && html`<button className="btn btn-quiet btn-sm" onClick=${() => setSelCat('')}>پاک‌کردن فیلتر (${selCat})<${Icon} n="x" s=${14} /></button>`}
+              </div>
+              ${categories.status === 'loading'
+                ? html`<${RowsSkeleton} n=${5} />`
+                : (categories.data || []).length === 0
+                ? html`<p className="muted sm" style=${{ padding: '20px 0', textAlign: 'center' }}>در این بازه هزینه ثبت‌شده‌ای ندارید.</p>`
+                : categories.data.map((c) => html`
+                  <div key=${c.category} className="row between sm" style=${{ padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                    <span style=${{ fontWeight: 500 }}>${c.category}</span>
+                    <div className="num" style=${{ textAlign: 'end' }}>
+                      <div>${toman(c.amount)}</div>
+                      <div className="xs muted">${fa(c.share)}٪ از کل</div>
+                    </div>
+                  </div>
+                `)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =============================== MODALS =============================== */
+    function AddModal({ initialType = 'expense', onClose, onSuccess }) {
+      const [type, setType] = useState(initialType);
+      const [amount, setAmount] = useState('');
+      const [category, setCategory] = useState(initialType === 'income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]);
+      const [name, setName] = useState('');
+      const [date, setDate] = useState(iso(today0()));
+      const [err, setErr] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      const cats = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+
+      const handleTypeChange = (t) => {
+        setType(t);
+        setCategory(t === 'income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]);
+      };
+
+      const handleAmountInput = (e) => {
+        const raw = toLatin(e.target.value).replace(/\D/g, '');
+        setAmount(raw ? Number(raw).toLocaleString('en-US') : '');
+        setErr('');
+      };
+
+      const submit = async (e) => {
+        e.preventDefault();
+        const cleanAmt = Number(toLatin(amount).replace(/,/g, ''));
+        if (!cleanAmt || cleanAmt <= 0) return setErr('لطفاً مبلغ معتبری وارد کنید.');
+        setLoading(true);
+        try {
+          await api.transactions.create({ type, amount: cleanAmt, category, name: name.trim() || category, date });
+          onSuccess();
+          onClose();
+        } catch (ex) {
+          Log.error(ex);
+          setErr('خطا در ثبت تراکنش.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return html`
+        <${Modal} title="ثبت تراکنش جدید" onClose=${onClose}>
+          ${() => html`
+            <form onSubmit=${submit}>
+              <div className="seg" style=${{ width: '100%', marginBottom: 12 }}>
+                <button type="button" className=${type === 'expense' ? 'on' : ''} onClick=${() => handleTypeChange('expense')}>هزینه</button>
+                <button type="button" className=${type === 'income' ? 'on' : ''} onClick=${() => handleTypeChange('income')}>درآمد</button>
+              </div>
+
+              <div style=${{ marginBottom: 12 }}>
+                <div className="amount-in">
+                  <span className="xs muted">تومان</span>
+                  <input type="text" inputMode="numeric" placeholder="۰" value=${amount} onInput=${handleAmountInput} autoFocus=${true} />
+                </div>
+                ${err && html`<div className="xs" style=${{ color: 'var(--danger)', marginTop: 4 }}>${err}</div>`}
+              </div>
+
+              <div style=${{ marginBottom: 12 }}>
+                <label className="xs muted">دسته‌بندی</label>
+                <div className="pills">
+                  ${cats.map((c) => html`<button type="button" key=${c} className=${'pill' + (category === c ? ' on' : '')} onClick=${() => setCategory(c)}>${c}</button>`)}
+                </div>
+              </div>
+
+              <div style=${{ marginBottom: 12 }}>
+                <label className="xs muted">عنوان / شرح (اختیاری)</label>
+                <input type="text" className="input" placeholder=${category} value=${name} onInput=${(e) => setName(e.target.value)} />
+              </div>
+
+              <div style=${{ marginBottom: 20 }}>
+                <label className="xs muted">تاریخ</label>
+                <input type="date" className="input" value=${date} onChange=${(e) => setDate(e.target.value)} />
+              </div>
+
+              <button type="submit" className="btn btn-primary btn-block" disabled=${loading}>${loading ? 'در حال ثبت...' : 'ثبت تراکنش'}
+              </button>
+            </form>
+          `}
+        <//>
+      `;
+    }
+
+    function TxDetailModal({ tx, onClose, onDelete }) {
+      const [confirm, setConfirm] = useState(false);
+      const [loading, setLoading] = useState(false);
+
+      const remove = async () => {
+        setLoading(true);
+        try {
+          await api.transactions.remove(tx.id);
+          onDelete();
+          onClose();
+        } catch (e) {
+          Log.error(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const inc = tx.type === 'income';
+
+      return html`
+        <${Modal} title="جزئیات تراکنش" onClose=${onClose}>
+          ${() => html`
+            <div>
+              <div style=${{ textAlign: 'center', padding: '10px 0' }}>
+                <h3 style=${{ fontSize: 18, fontWeight: 600 }}>${tx.name}</h3>
+                <div className="num" style=${{ fontSize: 24, fontWeight: 700, marginTop: 4, color: inc ? 'var(--success)' : 'inherit' }}>
+                  ${inc ? '+' : '−'}${fa(tx.amount)} <span className="muted xs">تومان</span>
+                </div>
+              </div>
+
+              <div className="card" style=${{ background: 'rgba(255,255,255,0.02)', padding: 12, margin: '12px 0' }}>
+                <div className="row between sm" style=${{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                  <span className="muted">دسته‌بندی</span>
+                  <span>${tx.category}</span>
+                </div>
+                <div className="row between sm" style=${{ padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                  <span className="muted">تاریخ</span>
+                  <span>${fullDate(tx.date)}</span>
+                </div>
+                <div className="row between sm" style=${{ padding: '6px 0' }}>
+                  <span className="muted">منبع</span>
+                  <span>${tx.source === 'telegram' ? 'ربات تلگرام' : 'وب‌اپلیکیشن'}</span>
+                </div>
+              </div>
+
+              ${confirm
+                ? html`
+                  <div className="row" style=${{ gap: 8 }}>
+                    <button className="btn btn-danger btn-block" onClick=${remove} disabled=${loading}>تأیید حذف</button>
+                    <button className="btn btn-ghost btn-block" onClick=${() => setConfirm(false)}>انصراف</button>
+                  </div>
+                `
+                : html`
+                  <button className="btn btn-danger btn-block" onClick=${() => setConfirm(true)}>
+                    <${Icon} n="trash" s=${16} /> حذف تراکنش
+                  </button>
+                `}
+            </div>
+          `}
+        <//>
+      `;
+    }
+
+    /* =============================== APP LAYOUT & SHELL =============================== */
+    function App() {
+      const { path, query } = useRoute();
+      const [version, setVersion] = useState(0);
+      const [addModal, setAddModal] = useState(null);
+      const [selectedTx, setSelectedTx] = useState(null);
+      const [toast, setToast] = useState(null);
+
+      const reload = () => setVersion((v) => v + 1);
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+      };
+
+      const navClass = (p) => (path === p ? 'on' : '');
+
+      return html`
+        <${Store}.Provider value=${{ version, reload, query, openAdd: (t) => setAddModal(t), openTx: (t) => setSelectedTx(t) }}>
+          <div className="topbar">
+            <div className="topbar-in">
+              <${Logo} />
+              <nav className="navlinks">
+                <a href="#/" className=${navClass('/')}>داشبورد</a>
+                <a href="#/transactions" className=${navClass('/transactions')}>تراکنش‌ها</a>
+                <a href="#/analytics" className=${navClass('/analytics')}>تحلیل مالی</a>
+              </nav>
+              <button className="btn btn-primary btn-sm" onClick=${() => setAddModal('expense')}>
+                <${Icon} n="plus" s=${14} />ثبت جدید
+              </button>
+            </div>
+          </div>
+
+          <main id="main">
+            ${path === '/' && html`<${Dashboard} />`}
+            ${path === '/transactions' && html`<${TransactionsPage} />`}
+            ${path === '/analytics' && html`<${AnalyticsPage} />`}
+          </main>
+
+          <nav className="bottomnav">
+            <a href="#/" className=${navClass('/')}>
+              <${Icon} n="home" />
+              <span>داشبورد</span>
+            </a>
+            <a href="#/transactions" className=${navClass('/transactions')}>
+              <${Icon} n="list" />
+              <span>تراکنش‌ها</span>
+            </a>
+            <a href="#/analytics" className=${navClass('/analytics')}>
+              <${Icon} n="chart" />
+              <span>تحلیل</span>
+            </a>
+          </nav>
+
+          <button className="fab" onClick=${() => setAddModal('expense')}>
+            <${Icon} n="plus" s=${22} />
+          </button>
+
+          ${toast && html`
+            <div className="toasts">
+              <div className="toast">
+                <${Icon} n="check" />
+                <div className="sm">${toast}</div>
+              </div>
+            </div>
+          `}
+
+          ${addModal && html`<${AddModal} initialType=${addModal} onClose=${() => setAddModal(null)} onSuccess=${() => { reload(); showToast('تراکنش با موفقیت ثبت شد.'); }} />`}
+          ${selectedTx && html`<${TxDetailModal} tx=${selectedTx} onClose=${() => setSelectedTx(null)} onDelete=${() => { reload(); showToast('تراکنش حذف شد.'); }} />`}
+        <//>
+      `;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(html`<${App} />`);
+  </script>
+</body>
+</html>
