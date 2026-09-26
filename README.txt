@@ -1,30 +1,31 @@
-Payo — Full English Mode Patch
+Payo Full English Fix
 
-This patch expands the existing language switcher so English mode affects:
-- visible Persian UI text across rendered pages
-- buttons, labels, empty states and common errors
-- placeholders, titles and aria labels
-- categories and common demo merchant names
-- Persian/Arabic numerals -> Latin numerals
-- Persian percent sign -> %
-- Persian dates -> English dates
-- تومان -> Toman in English mode (no unverified currency conversion)
+این پچ مشکل صفحه‌ای که فقط لوگوی Payo را نشان می‌دهد را اصلاح می‌کند.
 
-It keeps Persian mode as before.
+Changes:
+- MutationObserver دیگر هنگام ترجمه خودش را دوباره trigger نمی‌کند.
+- Observer هنگام اعمال ترجمه disconnect می‌شود و سپس دوباره فعال می‌شود.
+- Splash overlay حذف می‌شود تا سایت همیشه وارد Dashboard شود.
+- English / فارسی و ترجمه سراسری فعلی حفظ می‌شود.
+- Telegram bot files are not modified.
 
 Apply:
-1. Extract the ZIP into the Payo project root.
-2. Run:
-   powershell -ExecutionPolicy Bypass -File .pply_payo_full_english.ps1
-3. Build:
-   & "C:\Program Files
-odejs
-pm.cmd" run build
-4. Test:
-   - English: UI should be English and numerals Latin.
-   - فارسی: UI returns to Persian/RTL.
+1. Extract this ZIP into:
+   C:\Users\orchidpharmed\OneDrive\Documents\telegram_bot
 
-Then deploy:
+2. Run:
+   powershell -ExecutionPolicy Bypass -File .\fix_payo_full_english.ps1
+
+3. Build:
+   & "C:\Program Files\nodejs\npm.cmd" run build
+
+4. Test locally:
+   & "C:\Program Files\nodejs\npm.cmd" run preview -- --host 127.0.0.1
+
+   Open:
+   http://127.0.0.1:4173/payo-bot/
+
+5. After the site opens correctly:
    git add .
-   git commit -m "Complete English localization"
+   git commit -m "Fix Payo English mode runtime"
    git push origin main

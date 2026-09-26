@@ -354,16 +354,6 @@ function createDocumentTranslator() {
   const textOriginals = new WeakMap<Text, string>();
   const elementOriginals = new WeakMap<HTMLElement, Record<string, string>>();
   let english = false;
-  let observer: MutationObserver | null = null;
-  let scanning = false;
-
-  const observerOptions: MutationObserverInit = {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeFilter: ['placeholder', 'title', 'aria-label', 'aria-description'],
-  };
 
   const skip = (node: Node) => {
     const parent = node.parentElement;
@@ -377,7 +367,6 @@ function createDocumentTranslator() {
     if (skip(node)) return;
 
     const current = node.nodeValue ?? '';
-
     if (!textOriginals.has(node) && containsPersian(current)) {
       textOriginals.set(node, current);
     }
@@ -386,103 +375,53 @@ function createDocumentTranslator() {
     if (original == null) return;
 
     const next = english ? translatePersianText(original) : original;
-
     if (node.nodeValue !== next) {
       node.nodeValue = next;
     }
   };
 
-  const translateElementAttributes = (element: HTMLElement) => {
-    const attrs = ['placeholder', 'title', 'aria-label', 'aria-description'];
-
-    for (const attr of attrs) {
-      const current = element.getAttribute(attr);
-      if (current == null) continue;
-
-      if (!elementOriginals.has(element)) {
-        elementOriginals.set(element, {});
-      }
-
-      const store = elementOriginals.get(element)!;
-
-      if (store[attr] == null && containsPersian(current)) {
-        store[attr] = current;
-      }
-
-      const original = store[attr] ?? current;
-
-      if (english) {
-        if (containsPersian(original)) {
-          const translated = translatePersianText(original);
-          if (current !== translated) {
-            element.setAttribute(attr, translated);
-          }
-        }
-      } else if (store[attr] != null && current !== store[attr]) {
-        element.setAttribute(attr, store[attr]);
-      }
-    }
-  };
-
   const scan = () => {
-    if (typeof document === 'undefined' || scanning) return;
+    if (typeof document === 'undefined') return;
 
-    scanning = true;
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+    );
+    let node: Node | null;
 
-    try {
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT,
-      );
-
-      let node: Node | null;
-
-      while ((node = walker.nextNode())) {
-        translateTextNode(node as Text);
-      }
-
-      document.querySelectorAll<HTMLElement>('*').forEach(
-        translateElementAttributes,
-      );
-    } finally {
-      scanning = false;
+    while ((node = walker.nextNode())) {
+      translateTextNode(node as Text);
     }
+
+    document.querySelectorAll<HTMLElement>('*').forEach((element) => {
+      translateElementAttributes(element, english, elementOriginals);
+    });
   };
 
-  const observe = () => {
-    if (!observer || typeof document === 'undefined') return;
-
-    observer.disconnect();
-    observer.observe(document.body, observerOptions);
-  };
+  let observer: MutationObserver | null = null;
 
   const start = () => {
     if (typeof document === 'undefined') return;
-
-    if (!observer) {
-      observer = new MutationObserver(() => {
-        // IMPORTANT: disconnect before changing the DOM so our own translations
-        // cannot recursively trigger the observer.
-        if (!english || scanning) return;
-
-        observer?.disconnect();
-        scan();
-        observe();
-      });
-    }
-
     scan();
-    observe();
+
+    observer?.disconnect();
+    observer = new MutationObserver(() => {
+      scan();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['placeholder', 'title', 'aria-label', 'aria-description'],
+    });
   };
 
   return {
     setLanguage(nextLanguage: Language) {
       english = nextLanguage === 'en';
-
-      // Translate once immediately, with the observer disconnected.
-      if (observer) observer.disconnect();
       scan();
-      observe();
     },
     start,
   };
@@ -595,5 +534,4 @@ export function LanguageSwitcher() {
     </div>
   );
 }
-
 
