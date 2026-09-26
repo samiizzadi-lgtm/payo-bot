@@ -1,0 +1,264 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-background: #000000;
+  --color-surface: #0b0c10;
+  --color-surface-elevated: #12141a;
+  --color-surface-hover: #181b22;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-strong: rgba(255,255,255,0.16);
+  --color-text-primary: #f4f6fa;
+  --color-text-secondary: #8f97a8;
+  --color-text-tertiary: #5d6472;
+  --color-accent: #2f6bff;
+  --color-accent-glow: rgba(47,107,255,0.38);
+  --color-accent-soft: rgba(47,107,255,0.14);
+  --color-success: #3ddc97;
+  --color-danger: #ff5d6c;
+  --color-warning: #e6b450;
+  --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --background: #000000;
+  --surface: #0b0c10;
+  --surface-elevated: #12141a;
+  --surface-hover: #181b22;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.16);
+  --text-primary: #f4f6fa;
+  --text-secondary: #8f97a8;
+  --text-tertiary: #5d6472;
+  --accent-blue: #2f6bff;
+  --accent-glow: rgba(47,107,255,0.38);
+  --accent-soft: rgba(47,107,255,0.14);
+  --success: #3ddc97;
+  --danger: #ff5d6c;
+  --warning: #e6b450;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --ease: cubic-bezier(0.2,0.7,0.2,1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  overflow-x: hidden;
+  direction: rtl;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 85% -5%, rgba(47,107,255,0.22), transparent 70%),
+    radial-gradient(40% 35% at 0% 100%, rgba(47,107,255,0.08), transparent 70%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.num {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+}
+
+/* Animations */
+@keyframes fade {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes fadeout {
+  to { opacity: 0 }
+}
+
+@keyframes pagein {
+  from { opacity: 0; transform: translateY(10px) }
+  to { opacity: 1; transform: none }
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.97) }
+  to { opacity: 1; transform: none }
+}
+
+@keyframes popout {
+  to { opacity: 0; transform: translateY(8px) scale(0.98) }
+}
+
+@keyframes sheet {
+  from { transform: translateY(100%) }
+  to { transform: none }
+}
+
+@keyframes rowin {
+  from { opacity: 0; transform: translateY(6px) }
+  to { opacity: 1; transform: none }
+}
+
+@keyframes wipe {
+  from { clip-path: inset(0 100% 0 0) }
+  to { clip-path: inset(0 0 0 0) }
+}
+
+@keyframes grow {
+  from { transform: scaleX(0) }
+  to { transform: scaleX(1) }
+}
+
+@keyframes barin {
+  from { transform: scaleY(0) }
+  to { transform: scaleY(1) }
+}
+
+@keyframes toastin {
+  from { opacity: 0; transform: translateX(-24px) }
+  to { opacity: 1; transform: none }
+}
+
+@keyframes sk {
+  to { background-position: -200% 0 }
+}
+
+@keyframes splashout {
+  to { opacity: 0; visibility: hidden }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg) }
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0 }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .dash > .a,
+  .dash > .b,
+  .dash > .c,
+  .dash > .d,
+  .dash > .e {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  nav[aria-label="ناوبری"] {
+    display: grid !important;
+  }
+
+  button[aria-label="ثبت تراکنش"] {
+    display: grid !important;
+  }
+
+  header nav {
+    display: none !important;
+  }
+}
+
+/* Print styles for PDF */
+@media print {
+  body::before {
+    display: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .topbar,
+  .bottomnav,
+  .fab {
+    display: none !important;
+  }
+
+  .page {
+    padding: 0 !important;
+  }
+
+  .card {
+    break-inside: avoid;
+    border: 1px solid #ccc !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

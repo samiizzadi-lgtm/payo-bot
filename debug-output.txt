@@ -1,0 +1,231 @@
+--- index (3).html ---
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payo — Personal Finance Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#05060a;color:#f5f7fb;font-family:Inter,Arial,sans-serif;line-height:1.8}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.2;background-image:linear-gradient(#fff1 1px,transparent 1px),linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:42px 42px}
+a{text-decoration:none;color:inherit}.wrap{width:min(1100px,calc(100% - 28px));margin:auto}
+nav{position:sticky;top:0;z-index:5;background:#05060add;backdrop-filter:blur(16px);border-bottom:1px solid #ffffff12}.nav{height:70px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;letter-spacing:3px;font-size:20px}.logo i{color:#9b7cff;font-style:normal}.links{display:flex;gap:25px;color:#9da4b5;font-size:13px}.links a:hover{color:#fff}
+.cta,.primary{background:linear-gradient(100deg,#9b7cff,#55e6ff);color:#05060a!important;border:0!important;font-weight:900}
+.cta{padding:8px 16px;border-radius:99px;font-size:12px}
+.hero{min-height:calc(100vh - 70px);display:grid;grid-template-columns:1.1fr .9fr;gap:55px;align-items:center;padding:75px 0}
+.label{color:#55e6ff;font:11px monospace;letter-spacing:2px}.eyebrow{color:#9b7cff;margin-bottom:18px;font:11px monospace;letter-spacing:2px}
+h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:clamp(48px,7vw,86px);line-height:1.08;letter-spacing:-3px;margin:0}.grad{background:linear-gradient(100deg,#fff,#bba8ff,#55e6ff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.hero p,.sub{color:#a4abbc;max-width:650px;font-size:17px}.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-block;padding:12px 19px;border:1px solid #ffffff1b;border-radius:13px;font-size:13px}.btn:hover{transform:translateY(-2px)}
+.stats{display:flex;gap:25px;flex-wrap:wrap;margin-top:35px;color:#687084;font:11px monospace}.stats b{display:block;color:white;font-size:21px}
+.terminal,.card{border:1px solid #ffffff12;background:linear-gradient(145deg,#ffffff0a,#ffffff03);border-radius:21px;box-shadow:0 25px 80px #0008}
+.terminal{overflow:hidden}.termhead{padding:12px 15px;border-bottom:1px solid #ffffff0d;color:#687084;font:11px monospace}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:5px}.r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
+.term{padding:20px;font:12px/2 monospace;min-height:330px;color:#cbd1df}.purple{color:#9b7cff}.cyan{color:#55e6ff}.green{color:#50e3a4}.dim{color:#687084}
+section{padding:95px 0}h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:clamp(34px,5vw,54px);line-height:1.2;margin:8px 0 13px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{padding:25px;transition:.3s}.card:hover{transform:translateY(-5px);border-color:#9b7cff44}.icon{font-size:27px}.card h3{margin:7px 0;font-size:19px}.card p{margin:0;color:#9da4b5;font-size:13px}
+.payo{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:30px;background:radial-gradient(circle at 15% 0,#9b7cff20,transparent 40%),#0b0d14;border-color:#9b7cff33}
+.badge{display:inline-block;color:#9b7cff;border:1px solid #9b7cff35;background:#9b7cff12;border-radius:99px;padding:3px 9px;font:10px monospace}.payo h3{font-size:42px;margin:8px 0}.tagline{color:#55e6ff;font:11px monospace}.features{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.feature{padding:9px;border:1px solid #ffffff0d;border-radius:9px;background:#0002;font-size:12px}
+.dash{background:#080a10;border:1px solid #ffffff12;border-radius:17px;padding:17px}.dhead{display:flex;justify-content:space-between;font:11px monospace}.online{color:#50e3a4}.balance{margin-top:15px;padding:18px;border-radius:14px;background:linear-gradient(135deg,#9b7cff1b,#55e6ff0b)}.balance small,.mini small{display:block;color:#687084;font:9px monospace}.balance strong{font-size:25px}.mini{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}.mini div{padding:12px;border:1px solid #ffffff0d;border-radius:11px}.stack{display:flex;flex-wrap:wrap;gap:9px}.stack span{padding:7px 10px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05;font:11px monospace;color:#cbd1df}
+.contact{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.contact a{padding:17px;border:1px solid #ffffff12;border-radius:14px;background:#ffffff04}.contact a:hover{border-color:#55e6ff55}.contact small{display:block;color:#687084;font:10px monospace}.contact b{font-size:14px}
+footer{border-top:1px solid #ffffff0d;padding:28px 0 45px;color:#687084;font:10px monospace;display:flex;justify-content:space-between}
+@media(max-width:800px){.links{display:none}.hero,.payo{grid-template-columns:1fr}.grid3,.grid2{grid-template-columns:1fr}}
+@media(max-width:520px){.contact,.features,.mini{grid-template-columns:1fr}section{padding:70px 0}footer{flex-direction:column;gap:8px}}
+</style>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Payo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --background:#000;--surface:#0b0c10;--surface-elevated:#12141a;--surface-hover:#181b22;
+  --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.16);
+  --text-primary:#f4f6fa;--text-secondary:#8f97a8;--text-tertiary:#5d6472;
+  --accent-blue:#2f6bff;--accent-glow:rgba(47,107,255,.38);--accent-soft:rgba(47,107,255,.14);
+  --success:#3ddc97;--danger:#ff5d6c;
+  --radius:6px;--radius-lg:10px;--ease:cubic-bezier(.2,.7,.2,1);
+  --font:'Vazirmatn','Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0}
+html{background:#000;color-scheme:dark;-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--background);color:var(--text-primary);font:400 15px/1.7 var(--font);-webkit-font-smoothing:antialiased;min-height:100%;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(55% 45% at 85% -5%,rgba(47,107,255,.24),transparent 70%),radial-gradient(40% 35% at 0% 100%,rgba(47,107,255,.10),transparent 70%)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent-blue);outline-offset:2px}
+#root{position:relative;z-index:1;min-height:100vh}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--text-secondary)}
+.sm{font-size:13px}.xs{font-size:12px}
+
+import React, { useEffect } from 'react';
+import { StoreProvider, useStore } from './store';
+import { useRoute } from './components/hooks';
+import {
+  Icon,
+  Logo,
+  ToastList,
+  Dropdown,
+  DropdownItem,
+} from './components/ui';
+import { Dashboard } from './pages/Dashboard';
+import { Transactions } from './pages/Transactions';
+import { Analytics } from './pages/Analytics';
+import { Budget } from './pages/Budget';
+import { AddModal, DetailModal } from './components/Modals';
+import { api } from './mock';
+
+const NAV: [string, string, string][] = [
+  ['/', '???????', 'home'],
+  ['/tx', '?????????', 'list'],
+  ['/stats', '?????', 'chart'],
+  ['/budget', '?????', 'wallet'],
+];
+
+function AppShell() {
+  const route = useRoute();
+  const { modal, closeModal, openAdd, toasts } = useStore();
+  const path = route.path;
+
+  useEffect(() => {
+    document.title = 'Payo';
+  }, []);
+
+  const isActive = (p: string) =>
+    p === '/'
+      ? path !== '/tx' && path !== '/stats' && path !== '/budget'
+      : path === p;
+
+  const Page =
+    path === '/tx' ? (
+      <Transactions key="tx" query={route.query} />
+    ) : path === '/stats' ? (
+      <Analytics key="st" />
+    ) : path === '/budget' ? (
+      <Budget key="bg" />
+    ) : (
+      <Dashboard key="db" />
+    );
+
+  const topbarStyle: React.CSSProperties = {
+    position: 'sticky',
+    top: 'env(safe-area-inset-top, 0px)',
+    zIndex: 40,
+    background: 'rgba(0,0,0,0.76)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    borderBottom: '1px solid var(--border)',
+  };
+
+  const navLinkBase: React.CSSProperties = {
+    position: 'relative',
+    padding: '8px 14px',
+    fontSize: 14,
+    borderRadius: 'var(--radius)',
+    transition: 'color 0.15s',
+    textDecoration: 'none',
+    cursor: 'pointer',
+  };
+
+  return (
+    <>
+      {/* Splash */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 300,
+          background: '#000',
+          display: 'grid',
+          placeItems: 'center',
+          animation: 'splashout 0.5s ease 0.7s both',
+          pointerEvents: 'none',
+        }}
+        aria-hidden="true"
+      >
+        <Logo size={32} />
+      </div>
+
+      {/* Topbar */}
+      <header style={topbarStyle} className="no-print">
+        <div
+          style={{
+            maxWidth: 1180,
+            margin: '0 auto',
+            height: 60,
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 28,
+          }}
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-background: #000000;
+  --color-surface: #0b0c10;
+  --color-surface-elevated: #12141a;
+  --color-surface-hover: #181b22;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-strong: rgba(255,255,255,0.16);
+  --color-text-primary: #f4f6fa;
+  --color-text-secondary: #8f97a8;
+  --color-text-tertiary: #5d6472;
+  --color-accent: #2f6bff;
+  --color-accent-glow: rgba(47,107,255,0.38);
+  --color-accent-soft: rgba(47,107,255,0.14);
+  --color-success: #3ddc97;
+  --color-danger: #ff5d6c;
+  --color-warning: #e6b450;
+  --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --background: #000000;
+  --surface: #0b0c10;
+  --surface-elevated: #12141a;
+  --surface-hover: #181b22;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.16);
+  --text-primary: #f4f6fa;
+  --text-secondary: #8f97a8;
+  --text-tertiary: #5d6472;
+  --accent-blue: #2f6bff;
+  --accent-glow: rgba(47,107,255,0.38);
+  --accent-soft: rgba(47,107,255,0.14);
+  --success: #3ddc97;
+  --danger: #ff5d6c;
+  --warning: #e6b450;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --ease: cubic-bezier(0.2,0.7,0.2,1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
