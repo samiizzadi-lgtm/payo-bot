@@ -9,18 +9,10 @@ export const toLatin = (s: string | number) =>
     .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
     .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
 
-const isEnglish = () =>
-  typeof window !== 'undefined' &&
-  window.localStorage.getItem('payo-language') === 'en';
+export const fa = (n: number) =>
+  Math.round(safeNumber(n)).toLocaleString('fa-IR');
 
-export const fa = (n: number) => {
-  const value = Math.round(safeNumber(n));
-
-  return value.toLocaleString(isEnglish() ? 'en-US' : 'fa-IR');
-};
-
-export const toman = (n: number) =>
-  isEnglish() ? `${fa(n)} Toman` : `${fa(n)} تومان`;
+export const toman = (n: number) => fa(n) + ' تومان';
 
 export const short = (n: number) => {
   const value = safeNumber(n);
@@ -28,17 +20,14 @@ export const short = (n: number) => {
 
   if (abs >= 1e6) {
     return (
-      (value / 1e6).toLocaleString(isEnglish() ? 'en-US' : 'fa-IR', {
+      (value / 1e6).toLocaleString('fa-IR', {
         maximumFractionDigits: 1,
-      }) + (isEnglish() ? ' M' : ' م')
+      }) + ' م'
     );
   }
 
   if (abs >= 1e3) {
-    return (
-      fa(value / 1e3) +
-      (isEnglish() ? ' K' : ' ه')
-    );
+    return fa(value / 1e3) + ' ه';
   }
 
   return fa(value);
@@ -48,6 +37,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 export const iso = (date: Date) => {
   if (!isValidDate(date)) return '';
+
   return (
     date.getFullYear() +
     '-' +
@@ -69,6 +59,7 @@ export const parseISO = (value: string) => {
   const day = Number(match[3]);
 
   const date = new Date(year, month - 1, day);
+
   if (
     date.getFullYear() !== year ||
     date.getMonth() !== month - 1 ||
@@ -93,6 +84,7 @@ export const addDays = (date: Date, amount: number) => {
   if (!isValidDate(date) || !Number.isFinite(amount)) {
     return new Date(NaN);
   }
+
   return new Date(
     date.getFullYear(),
     date.getMonth(),
@@ -111,10 +103,7 @@ export const daysAgo = (value: string) => {
 };
 
 const fmt = (options: Intl.DateTimeFormatOptions) =>
-  new Intl.DateTimeFormat(
-    isEnglish() ? 'en-US' : 'fa-IR-u-ca-persian',
-    options,
-  );
+  new Intl.DateTimeFormat('fa-IR-u-ca-persian', options);
 
 export const F = {
   dm: fmt({ day: 'numeric', month: 'long' }),
@@ -132,12 +121,9 @@ export const F = {
 export const dateLabel = (value: string) => {
   const elapsed = daysAgo(value);
 
-  if (!Number.isFinite(elapsed)) {
-    return isEnglish() ? 'Invalid date' : 'تاریخ نامعتبر';
-  }
-
-  if (elapsed === 0) return isEnglish() ? 'Today' : 'امروز';
-  if (elapsed === 1) return isEnglish() ? 'Yesterday' : 'دیروز';
+  if (!Number.isFinite(elapsed)) return 'تاریخ نامعتبر';
+  if (elapsed === 0) return 'امروز';
+  if (elapsed === 1) return 'دیروز';
 
   return F.dm.format(parseISO(value));
 };
@@ -145,40 +131,26 @@ export const dateLabel = (value: string) => {
 export const fullDate = (value: string) => {
   const date = parseISO(value);
 
-  return isValidDate(date)
-    ? F.full.format(date)
-    : isEnglish()
-      ? 'Invalid date'
-      : 'تاریخ نامعتبر';
+  return isValidDate(date) ? F.full.format(date) : 'تاریخ نامعتبر';
 };
 
 export const pctText = (
   cur: number,
   prev: number,
-  more?: string,
-  less?: string
+  more = 'بیشتر',
+  less = 'کمتر'
 ) => {
   const current = safeNumber(cur);
   const previous = safeNumber(prev);
 
-  if (!previous) {
-    return isEnglish() ? 'No data from previous period' : 'بدون داده‌ی دوره‌ی قبل';
-  }
+  if (!previous) return 'بدون داده‌ی دوره‌ی قبل';
 
   const percent = Math.round(
     ((current - previous) / Math.abs(previous)) * 100
   );
 
-  if (isEnglish()) {
-    const moreText = more && more !== 'بیشتر' ? more : 'more';
-    const lessText = less && less !== 'کمتر' ? less : 'less';
-    return `${fa(Math.abs(percent))}% ${
-      percent >= 0 ? moreText : lessText
-    } than last month`;
-  }
-
   return `${fa(Math.abs(percent))}٪ ${
-    percent >= 0 ? more ?? 'بیشتر' : less ?? 'کمتر'
+    percent >= 0 ? more : less
   } از ماه قبل`;
 };
 
@@ -192,6 +164,7 @@ export const linearRegression = (ys: number[]) => {
       intercept: values[0] || 0,
     };
   }
+
   const xs = values.map((_, index) => index);
   const meanX =
     xs.reduce((sum, value) => sum + value, 0) / count;
@@ -212,6 +185,7 @@ export const linearRegression = (ys: number[]) => {
   const slope =
     denominator === 0 ? 0 : numerator / denominator;
   const intercept = meanY - slope * meanX;
+
   return {
     slope: safeNumber(slope),
     intercept: safeNumber(intercept),
@@ -233,4 +207,3 @@ export const predictNext = (ys: number[], steps = 3) => {
     )
   );
 };
-

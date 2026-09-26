@@ -233,4 +233,3 @@ export const predictNext = (ys: number[], steps = 3) => {
     )
   );
 };
-

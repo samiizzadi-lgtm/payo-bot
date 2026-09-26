@@ -1,21 +1,30 @@
-Payo Language Patch
+Payo — Full English Mode Patch
 
-This patch adds:
-- A visible English / فارسی language switcher in the top bar
-- Persistent language selection with localStorage
-- RTL for Persian and LTR for English
-- Bilingual top navigation, Add button, print/reset menu and mobile labels
-- A reusable i18n provider and useLanguage hook
+This patch expands the existing language switcher so English mode affects:
+- visible Persian UI text across rendered pages
+- buttons, labels, empty states and common errors
+- placeholders, titles and aria labels
+- categories and common demo merchant names
+- Persian/Arabic numerals -> Latin numerals
+- Persian percent sign -> %
+- Persian dates -> English dates
+- تومان -> Toman in English mode (no unverified currency conversion)
+
+It keeps Persian mode as before.
 
 Apply:
-1. Open PowerShell in the Payo project root.
+1. Extract the ZIP into the Payo project root.
 2. Run:
-   powershell -ExecutionPolicy Bypass -File .\add_payo_language.ps1
-3. Then:
-   npm run build
-4. Then:
-   git add .
-   git commit -m "Add English and Persian language switcher"
-   git push origin main
+   powershell -ExecutionPolicy Bypass -File .pply_payo_full_english.ps1
+3. Build:
+   & "C:\Program Files
+odejs
+pm.cmd" run build
+4. Test:
+   - English: UI should be English and numerals Latin.
+   - فارسی: UI returns to Persian/RTL.
 
-This patch intentionally avoids changing the Telegram bot.
+Then deploy:
+   git add .
+   git commit -m "Complete English localization"
+   git push origin main
