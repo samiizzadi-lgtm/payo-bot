@@ -1,4 +1,132 @@
-﻿﻿import React, { useEffect } from 'react';
+﻿$ErrorActionPreference = "Stop"
+
+$root = Get-Location
+$app = Join-Path $root "src\App.tsx"
+$css = Join-Path $root "src\index.css"
+$i18n = Join-Path $root "src\i18n.tsx"
+
+if (-not (Test-Path $app)) { throw "src\App.tsx پیدا نشد. این اسکریپت را از ریشه پروژه Payo اجرا کن." }
+if (-not (Test-Path $css)) { throw "src\index.css پیدا نشد." }
+
+Copy-Item $app "$app.before-language.bak" -Force
+Copy-Item $css "$css.before-language.bak" -Force
+
+$i18nContent = @'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+export type Language = 'fa' | 'en';
+
+type I18nContextValue = {
+  language: Language;
+  isPersian: boolean;
+  dir: 'rtl' | 'ltr';
+  setLanguage: (language: Language) => void;
+  toggleLanguage: () => void;
+  t: (fa: string, en: string) => string;
+};
+
+const STORAGE_KEY = 'payo-language';
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+function readStoredLanguage(): Language {
+  if (typeof window === 'undefined') return 'fa';
+  const value = window.localStorage.getItem(STORAGE_KEY);
+  return value === 'en' ? 'en' : 'fa';
+}
+
+function applyDocumentLanguage(language: Language) {
+  if (typeof document === 'undefined') return;
+
+  const isPersian = language === 'fa';
+  const dir = isPersian ? 'rtl' : 'ltr';
+
+  document.documentElement.lang = isPersian ? 'fa' : 'en';
+  document.documentElement.dir = dir;
+
+  document.body.lang = isPersian ? 'fa' : 'en';
+  document.body.dir = dir;
+  document.body.style.direction = dir;
+}
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(readStoredLanguage);
+
+  const setLanguage = (next: Language) => {
+    setLanguageState(next);
+    window.localStorage.setItem(STORAGE_KEY, next);
+    applyDocumentLanguage(next);
+  };
+
+  useEffect(() => {
+    applyDocumentLanguage(language);
+  }, [language]);
+
+  const value = useMemo<I18nContextValue>(
+    () => ({
+      language,
+      isPersian: language === 'fa',
+      dir: language === 'fa' ? 'rtl' : 'ltr',
+      setLanguage,
+      toggleLanguage: () => setLanguage(language === 'fa' ? 'en' : 'fa'),
+      t: (fa, en) => (language === 'fa' ? fa : en),
+    }),
+    [language],
+  );
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useLanguage() {
+  const context = useContext(I18nContext);
+  if (!context) {
+    throw new Error('useLanguage must be used inside LanguageProvider');
+  }
+  return context;
+}
+
+export function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
+
+  return (
+    <div
+      className="payo-language-switcher"
+      role="group"
+      aria-label="Language"
+      title={language === 'fa' ? 'تغییر زبان' : 'Change language'}
+    >
+      <span aria-hidden="true">🌐</span>
+
+      <button
+        type="button"
+        className={language === 'en' ? 'active' : ''}
+        onClick={() => setLanguage('en')}
+        aria-pressed={language === 'en'}
+      >
+        English
+      </button>
+
+      <span className="separator" aria-hidden="true">
+        |
+      </span>
+
+      <button
+        type="button"
+        className={language === 'fa' ? 'active' : ''}
+        onClick={() => setLanguage('fa')}
+        aria-pressed={language === 'fa'}
+      >
+        فارسی
+      </button>
+    </div>
+  );
+}
+
+'@
+Set-Content -Path $i18n -Value $i18nContent -Encoding UTF8
+
+$appContent = @'
+﻿import React, { useEffect } from 'react';
 import { StoreProvider, useStore } from './store';
 import { useRoute } from './components/hooks';
 import {
@@ -310,3 +438,81 @@ export default function App() {
   );
 }
 
+'@
+Set-Content -Path $app -Value $appContent -Encoding UTF8
+
+Add-Content -Path $css -Value @'
+
+
+/* Payo bilingual language switcher */
+.payo-language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: rgba(255,255,255,.035);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  direction: ltr;
+  flex-shrink: 0;
+}
+
+.payo-language-switcher button {
+  border: 0;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.payo-language-switcher button.active {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+.payo-language-switcher .separator {
+  opacity: .45;
+}
+
+html[dir="ltr"] body {
+  direction: ltr;
+}
+
+html[dir="rtl"] body {
+  direction: rtl;
+}
+
+@media (max-width: 760px) {
+  .payo-language-switcher {
+    order: 2;
+    margin-inline-start: auto;
+  }
+
+  header > div {
+    gap: 8px !important;
+  }
+
+  .payo-language-switcher button {
+    font-size: 11px;
+  }
+}
+
+'@
+
+Write-Host ""
+Write-Host "Payo language switcher added successfully." -ForegroundColor Green
+Write-Host "Created: src\i18n.tsx"
+Write-Host "Updated: src\App.tsx"
+Write-Host "Updated: src\index.css"
+Write-Host ""
+Write-Host "Backup files:"
+Write-Host "  src\App.tsx.before-language.bak"
+Write-Host "  src\index.css.before-language.bak"
+Write-Host ""
+Write-Host "Next: npm run build"

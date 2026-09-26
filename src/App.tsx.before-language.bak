@@ -1,4 +1,4 @@
-﻿﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { StoreProvider, useStore } from './store';
 import { useRoute } from './components/hooks';
 import {
@@ -14,12 +14,17 @@ import { Analytics } from './pages/Analytics';
 import { Budget } from './pages/Budget';
 import { AddModal, DetailModal } from './components/Modals';
 import { api } from './mock';
-import { LanguageProvider, LanguageSwitcher, useLanguage } from './i18n';
+
+const NAV: [string, string, string][] = [
+  ['/', 'داشبورد', 'home'],
+  ['/tx', 'تراکنش‌ها', 'list'],
+  ['/stats', 'تحلیل', 'chart'],
+  ['/budget', 'بودجه', 'wallet'],
+];
 
 function AppShell() {
   const route = useRoute();
   const { modal, closeModal, openAdd, toasts } = useStore();
-  const { t } = useLanguage();
   const path = route.path;
 
   useEffect(() => {
@@ -41,13 +46,6 @@ function AppShell() {
     ) : (
       <Dashboard key="db" />
     );
-
-  const navItems: [string, string, string][] = [
-    ['/', t('داشبورد', 'Dashboard'), 'home'],
-    ['/tx', t('تراکنش‌ها', 'Transactions'), 'list'],
-    ['/stats', t('تحلیل', 'Analytics'), 'chart'],
-    ['/budget', t('بودجه', 'Budget'), 'wallet'],
-  ];
 
   const topbarStyle: React.CSSProperties = {
     position: 'sticky',
@@ -98,7 +96,7 @@ function AppShell() {
             padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: 16,
+            gap: 28,
           }}
         >
           <a href="#/" aria-label="Payo">
@@ -107,7 +105,7 @@ function AppShell() {
 
           {/* Desktop navigation */}
           <nav style={{ display: 'flex', gap: 4, flex: 1 }}>
-            {navItems.map(([p, label]) => (
+            {NAV.map(([p, label]) => (
               <a
                 key={p}
                 href={'#' + p}
@@ -137,9 +135,6 @@ function AppShell() {
             ))}
           </nav>
 
-          {/* Language switcher */}
-          <LanguageSwitcher />
-
           {/* Mobile spacer */}
           <div
             style={{ flex: 1, display: 'none' }}
@@ -166,7 +161,7 @@ function AppShell() {
             }}
           >
             <Icon n="plus" s={16} />
-            {t('ثبت', 'Add')}
+            ثبت
           </button>
 
           <Dropdown trigger={<Icon n="more" />}>
@@ -179,7 +174,7 @@ function AppShell() {
                     window.print();
                   }}
                 >
-                  {t('چاپ / PDF', 'Print / PDF')}
+                  چاپ / PDF
                 </DropdownItem>
 
                 <DropdownItem
@@ -191,7 +186,7 @@ function AppShell() {
                   }}
                   danger
                 >
-                  {t('بازنشانی داده‌های نمونه', 'Reset demo data')}
+                  بازنشانی داده‌های نمونه
                 </DropdownItem>
               </>
             )}
@@ -206,7 +201,7 @@ function AppShell() {
         className="no-print"
         style={{
           display: 'none',
-          gridTemplateColumns: `repeat(${navItems.length},1fr)`,
+          gridTemplateColumns: `repeat(${NAV.length},1fr)`,
           position: 'fixed',
           insetInline: 0,
           bottom: 0,
@@ -218,9 +213,9 @@ function AppShell() {
           padding:
             '8px 8px calc(8px + env(safe-area-inset-bottom,0px))',
         }}
-        aria-label={t('ناوبری', 'Navigation')}
+        aria-label="ناوبری"
       >
-        {navItems.map(([p, label, icon]) => (
+        {NAV.map(([p, label, icon]) => (
           <a
             key={p}
             href={'#' + p}
@@ -274,7 +269,7 @@ function AppShell() {
           cursor: 'pointer',
           color: 'white',
         }}
-        aria-label={t('ثبت تراکنش', 'Add transaction')}
+        aria-label="ثبت تراکنش"
       >
         <Icon n="plus" s={26} />
       </button>
@@ -302,11 +297,8 @@ function AppShell() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <StoreProvider>
-        <AppShell />
-      </StoreProvider>
-    </LanguageProvider>
+    <StoreProvider>
+      <AppShell />
+    </StoreProvider>
   );
 }
-
